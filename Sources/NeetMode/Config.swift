@@ -81,4 +81,11 @@ enum Config {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir.appendingPathComponent("session.json")
     }
+
+    /// Marker recording the local calendar day a real session last ran to
+    /// completion, so the login lock engages at most once per day. Sits next to
+    /// the state file (inside ~/NeetMode when launched via the installer).
+    static var completedDayFile: URL {
+        stateFile.deletingLastPathComponent().appendingPathComponent("last-completed-day")
+    }
 }

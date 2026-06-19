@@ -33,6 +33,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Per-day gate: in real mode the login lock engages at most once a day.
+        // If a real session already ran to completion today — and none is mid-flight
+        // (a kill/relaunch still resumes that) — exit before showing anything, so
+        // the desktop stays free until tomorrow. NEETMODE_FORCE=1 overrides (admin).
+        if !isSelfTest, session.profile == .real,
+           ProcessInfo.processInfo.environment["NEETMODE_FORCE"] != "1" {
+            let resuming = (SessionController.loadDeadline().map { $0 > Date() }) ?? false
+            if !resuming, SessionController.alreadyCompletedToday() { exit(0) }
+        }
+
         NSApp.setActivationPolicy(isSelfTest ? .accessory : .regular)
 
         web = WebController(fallbackHTML: indexHTML)

@@ -53,11 +53,32 @@ final class SessionController {
         guard case .active(let end) = mode else { return }
         if Date() >= end {
             Self.clearDeadline()
+            if profile == .real { Self.markCompletedToday() }   // done for the day
             mode = .done
             onModeChange?()
         } else {
             onTick?()
         }
+    }
+
+    // MARK: - Per-day lock gate
+
+    /// Local calendar day from the Mac's clock, e.g. "2026-06-18".
+    private static func todayString() -> String {
+        let f = DateFormatter()
+        f.calendar = Calendar.current
+        f.timeZone = TimeZone.current
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: Date())
+    }
+    /// True if a real session already ran to completion earlier today.
+    static func alreadyCompletedToday() -> Bool {
+        guard let s = try? String(contentsOf: Config.completedDayFile, encoding: .utf8) else { return false }
+        return s.trimmingCharacters(in: .whitespacesAndNewlines) == todayString()
+    }
+    private static func markCompletedToday() {
+        try? todayString().write(to: Config.completedDayFile, atomically: true, encoding: .utf8)
     }
 
     // MARK: - Persistence
