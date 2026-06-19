@@ -62,9 +62,19 @@ chmod +x "$DIR/uninstall"
 
 say "Installed to $DIR"
 echo
-echo "  Run the lock now:        $DIR/neetmode"
-echo "  Launch at every login:   $DIR/packaging/autostart.sh on"
 echo "  Stop launching at login: $DIR/packaging/autostart.sh off"
+echo "  Run it manually:         $DIR/neetmode"
 echo "  (admin/dev test mode:    NEETMODE_PROFILE=test $DIR/neetmode )"
+echo "  Get out of the lock:     admin code 'bankai'"
 echo "  Uninstall everything:    $DIR/uninstall"
 echo
+
+# 5. Arm it: launch in real mode at every login (and right now). The whole point
+#    is that one curl command leaves the machine enforcing. Skip with
+#    NEETMODE_NO_AUTOSTART=1 when you just want to build without locking in.
+if [ "${NEETMODE_NO_AUTOSTART:-}" = "1" ]; then
+  say "Autostart skipped (NEETMODE_NO_AUTOSTART=1). Enable later: $DIR/packaging/autostart.sh on"
+else
+  say "Enabling login autostart (real mode)…"
+  "$DIR/packaging/autostart.sh" on
+fi
