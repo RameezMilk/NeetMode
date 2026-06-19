@@ -98,7 +98,7 @@
   .sec{font-size:12px;letter-spacing:.42em;color:var(--purple-bright);
     text-shadow:0 0 6px rgba(177,92,255,.4);text-align:center;margin:6px 0 14px}
 
-  .durations{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+  .durations{display:grid;grid-template-columns:repeat(1,1fr);gap:14px;margin-bottom:22px}
   .durations button{
     cursor:pointer;position:relative;padding:18px 0 14px;border-radius:6px;
     background:linear-gradient(180deg, rgba(120,50,210,.16), rgba(40,15,80,.22));
@@ -152,19 +152,17 @@
 
       <div class="sec">SELECT FOCUS DURATION</div>
       <div class="durations" id="durations">
-        <button data-min="15"><b>15</b><span>MIN</span></button>
-        <button data-min="30"><b>30</b><span>MIN</span></button>
-        <button data-min="60"><b>60</b><span>MIN</span></button>
+        <button class="sel" data-min="30"><b>30</b><span>MIN</span></button>
       </div>
 
-      <button id="start" disabled><span class="play">▶</span>INITIATE FOCUS</button>
+      <button id="start"><span class="play">▶</span>INITIATE FOCUS</button>
       <p id="status"></p>
       <p class="note">ONLY NEETCODE IS ACCESSIBLE WHILE THE SESSION IS ACTIVE</p>
     </div>
   </div>
 
 <script>
-  let selected = null;
+  let selected = '30';
   const startBtn = document.getElementById('start');
   const status = document.getElementById('status');
 
