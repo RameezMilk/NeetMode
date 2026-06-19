@@ -6,6 +6,34 @@ you press **Start** it disables the menu bar, Dock, ⌘Tab, ⌘Q, Force-Quit and
 logout, and pins an embedded web view to <https://neetcode.io/> until the timer
 runs out. The only ways out are the admin code or the timer elapsing.
 
+## Quick start
+
+Install (in Terminal):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/RameezMilk/NeetMode/dev/install.sh | bash
+```
+
+Launch the lock at every login (once per day):
+
+```bash
+~/NeetMode/packaging/autostart.sh on
+```
+
+Run it now / get out with the admin code (`bankai`):
+
+```bash
+~/NeetMode/neetmode        # NEETMODE_PROFILE=test for a windowed dev run
+```
+
+Remove everything (autostart + folder + web cache):
+
+```bash
+~/NeetMode/uninstall
+```
+
+---
+
 No browser is involved — NeetMode renders the web content itself in a `WKWebView`,
 so it's genuinely browser-agnostic. No Chrome automation, no Apple Events, no
 Network Extension.
