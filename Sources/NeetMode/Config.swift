@@ -64,10 +64,20 @@ enum Config {
 
     /// Where the active-session deadline is persisted, so a real-mode lock resumes
     /// if NeetMode is killed and relaunched (killing the process isn't an escape).
+    ///
+    /// When launched via the installer (which exports `NEETMODE_HOME`) the state
+    /// lives INSIDE that directory, so deleting ~/NeetMode wipes the app and all of
+    /// its state in one move. Otherwise it falls back to Application Support.
     static var stateFile: URL {
-        let dir = FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("NeetMode", isDirectory: true)
+        let dir: URL
+        if let home = ProcessInfo.processInfo.environment["NEETMODE_HOME"], !home.isEmpty {
+            dir = URL(fileURLWithPath: home, isDirectory: true)
+                .appendingPathComponent(".state", isDirectory: true)
+        } else {
+            dir = FileManager.default
+                .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+                .appendingPathComponent("NeetMode", isDirectory: true)
+        }
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir.appendingPathComponent("session.json")
     }
