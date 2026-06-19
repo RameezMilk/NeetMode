@@ -9,11 +9,11 @@ LABEL="com.neetmode.agent"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 DIR="$HOME/NeetMode"
 
-echo "[NeetMode] Turning off login autostart…"
+echo "[NeetMode] Turning off login autostart..."
 launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
 rm -f "$PLIST"
 
-echo "[NeetMode] Clearing cached NeetCode login data…"
+echo "[NeetMode] Clearing cached NeetCode login data..."
 # Only NeetMode-named paths, so nothing else is touched.
 for p in \
   "$HOME/Library/WebKit/NeetMode" \
@@ -24,7 +24,7 @@ for p in \
   rm -rf "$p" 2>/dev/null || true
 done
 
-echo "[NeetMode] Deleting $DIR…"
+echo "[NeetMode] Deleting $DIR..."
 rm -rf "$DIR"
 
 echo "[NeetMode] Done — NeetMode has been completely removed."

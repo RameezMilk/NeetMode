@@ -20,7 +20,7 @@ say() { printf '\033[1;35m[NeetMode]\033[0m %s\n' "$1"; }
 
 # 1. Build prerequisite: the Swift toolchain (Xcode Command Line Tools).
 if ! xcode-select -p >/dev/null 2>&1; then
-  say "Xcode Command Line Tools are required to build. Launching the installer…"
+  say "Xcode Command Line Tools are required to build. Launching the installer..."
   xcode-select --install || true
   say "Finish that install, then re-run this command."
   exit 1
@@ -38,7 +38,7 @@ else
 fi
 
 # 3. Build the release binary (stays inside $DIR/.build).
-say "Building (this can take a minute the first time)…"
+say "Building (this can take a minute the first time)..."
 cd "$DIR"
 swift build -c release
 
@@ -75,6 +75,6 @@ echo
 if [ "${NEETMODE_NO_AUTOSTART:-}" = "1" ]; then
   say "Autostart skipped (NEETMODE_NO_AUTOSTART=1). Enable later: $DIR/packaging/autostart.sh on"
 else
-  say "Enabling login autostart (real mode)…"
+  say "Enabling login autostart (real mode)..."
   "$DIR/packaging/autostart.sh" on
 fi
