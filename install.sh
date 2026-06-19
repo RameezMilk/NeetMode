@@ -42,17 +42,22 @@ say "Building (this can take a minute the first time)…"
 cd "$DIR"
 swift build -c release
 
-# 4. A tiny launcher that pins all state inside ~/NeetMode.
+# 4. A tiny launcher that pins all state inside ~/NeetMode and DEFAULTS to real
+#    mode (test mode is only reachable by explicitly setting NEETMODE_PROFILE).
 cat > "$DIR/neetmode" <<'LAUNCH'
 #!/usr/bin/env bash
 export NEETMODE_HOME="$HOME/NeetMode"
+export NEETMODE_PROFILE="${NEETMODE_PROFILE:-real}"
 exec "$NEETMODE_HOME/.build/release/NeetMode" "$@"
 LAUNCH
 chmod +x "$DIR/neetmode"
+chmod +x "$DIR/packaging/autostart.sh" 2>/dev/null || true
 
 say "Installed to $DIR"
 echo
-echo "  Start a focus session (windowed, safe):   $DIR/neetmode"
-echo "  Real fullscreen lock:            NEETMODE_PROFILE=real $DIR/neetmode"
-echo "  Uninstall completely:            rm -rf $DIR"
+echo "  Run the lock now:        $DIR/neetmode"
+echo "  Launch at every login:   $DIR/packaging/autostart.sh on"
+echo "  Stop launching at login: $DIR/packaging/autostart.sh off"
+echo "  (admin/dev test mode:    NEETMODE_PROFILE=test $DIR/neetmode )"
+echo "  Uninstall completely:    $DIR/packaging/autostart.sh off && rm -rf $DIR"
 echo
