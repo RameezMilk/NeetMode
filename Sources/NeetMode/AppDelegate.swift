@@ -26,6 +26,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     /// terminate isn't re-challenged.
     private var adminUnlocked = false
 
+    /// Drives the post-launch "claw to the front" burst (see startActivationBurst).
+    private var activationBurst: Timer?
+    private var activationBurstDeadline: Date?
+
     /// The close gate is active until the session has finished on its own.
     private var gateActive: Bool {
         if case .done = session.mode { return false }
@@ -65,6 +69,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         NotificationCenter.default.addObserver(
             self, selector: #selector(didResignActive),
             name: NSApplication.didResignActiveNotification, object: nil)
+
+        // Win the login focus race: keep re-asserting frontmost for a few seconds
+        // after launch so the kiosk locks down without waiting for a click.
+        startActivationBurst()
 
         if isSelfTest {
             selfTest = SelfTest(web: web, session: session)
@@ -238,9 +246,40 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         // If anything steals focus mid-session in real mode, grab it straight back
         // so the kiosk can't be left running in the background.
         guard !isSelfTest, session.profile == .real, gateActive else { return }
+        forceFrontmost()
+    }
+
+    /// Make the kiosk the active, key, frontmost app and re-assert the OS lockdown.
+    /// `presentationOptions` (hide Dock/menu bar, block ⌘Tab) only bite while we're
+    /// the active app, so re-applying them after activating is what actually locks.
+    private func forceFrontmost() {
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
         applyPresentation()
+    }
+
+    /// At login there's a focus race: macOS finishes bringing up the desktop AFTER
+    /// our launch and steals frontmost, leaving the window visible but un-activated —
+    /// so the lockdown never engages and you can roam until you click it.
+    /// `didResignActive` only fires on an explicit resign, which a never-activated
+    /// launch may not produce. So for the first few seconds we re-claim frontmost on
+    /// a short repeating timer until the session settles; steady-state steals after
+    /// that are handled by `didResignActive`.
+    private func startActivationBurst() {
+        guard !isSelfTest, session.profile == .real, gateActive else { return }
+        activationBurst?.invalidate()
+        activationBurstDeadline = Date().addingTimeInterval(6)
+        let timer = Timer(timeInterval: 0.5, repeats: true) { [weak self] t in
+            guard let self else { t.invalidate(); return }
+            let expired = self.activationBurstDeadline.map { Date() >= $0 } ?? true
+            guard self.gateActive, !expired else {
+                t.invalidate(); self.activationBurst = nil; return
+            }
+            self.forceFrontmost()
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        activationBurst = timer
+        forceFrontmost()   // fire once immediately, don't wait for the first tick
     }
 
     // MARK: - In-window admin prompt
