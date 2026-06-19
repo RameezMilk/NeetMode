@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.neetmode.watchdog</string>
+
+    <!-- Adjust this path if you installed the .app somewhere other than /Applications. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/NeetMode.app/Contents/MacOS/NeetMode</string>
+    </array>
+
+    <!-- Restart NeetMode if it ever exits (best-effort "can't be killed").
+         A persisted deadline means it resumes an in-progress lock on relaunch. -->
+    <key>KeepAlive</key>
+    <true/>
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/neetmode.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/neetmode.err.log</string>
+</dict>
+</plist>
