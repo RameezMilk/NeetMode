@@ -51,7 +51,14 @@ export NEETMODE_PROFILE="${NEETMODE_PROFILE:-real}"
 exec "$NEETMODE_HOME/.build/release/NeetMode" "$@"
 LAUNCH
 chmod +x "$DIR/neetmode"
-chmod +x "$DIR/packaging/autostart.sh" 2>/dev/null || true
+chmod +x "$DIR/packaging/autostart.sh" "$DIR/packaging/uninstall.sh" 2>/dev/null || true
+
+# One-shot uninstall command at the top level.
+cat > "$DIR/uninstall" <<'UNINSTALL'
+#!/usr/bin/env bash
+exec "$HOME/NeetMode/packaging/uninstall.sh"
+UNINSTALL
+chmod +x "$DIR/uninstall"
 
 say "Installed to $DIR"
 echo
@@ -59,5 +66,5 @@ echo "  Run the lock now:        $DIR/neetmode"
 echo "  Launch at every login:   $DIR/packaging/autostart.sh on"
 echo "  Stop launching at login: $DIR/packaging/autostart.sh off"
 echo "  (admin/dev test mode:    NEETMODE_PROFILE=test $DIR/neetmode )"
-echo "  Uninstall completely:    $DIR/packaging/autostart.sh off && rm -rf $DIR"
+echo "  Uninstall everything:    $DIR/uninstall"
 echo
